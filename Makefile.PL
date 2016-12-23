@@ -17,9 +17,9 @@ WriteMakefile(
     PREREQ_PM => {
         'Net::LDAP'           => 0,
         'Net::LDAP::Constant' => 0,
-
-        #'ABC'              => 1.6,
-        #'Foo::Bar::Module' => 5.0401,
+        'Carp'                => 0,
+        'Pod::Usage'          => 0,
+        'Getopt::Long'        => 0,
     },
     TEST_REQUIRES => {
         'Pod::Coverage::TrustPod' => 0,

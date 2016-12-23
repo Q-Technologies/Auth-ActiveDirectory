@@ -4,7 +4,21 @@ use 5.18.0;
 use strict;
 use warnings;
 use Getopt::Long qw{:config bundling};
-use parent qw/Auth::ActiveDirectory/;
+use Auth::ActiveDirectory;
+use Pod::Usage;
+use Carp qw/croak/;
+
+=head1 NAME
+
+Auth::ActiveDirectory::CLI - Authentication module for MS ActiveDirectory
+
+=head1 VERSION
+
+Version 0.01
+
+=cut
+
+our $VERSION = '0.01';
 
 =head1 SYNOPSIS
 
@@ -22,19 +36,27 @@ Private subroutine to handle command line args.
 
 =cut
 
-    sub _h_process_command_line {
-        my (%h_params) = @_;
-        $h_params{'argv'} = [@ARGV];
+    sub _process_command_line {
+        my (%params) = @_;
+        $params{'argv'} = [@ARGV];
         GetOptions(
 
             # command
-            'h|help|?'  => \$h_params{help},
-            'v|version' => \$h_params{version},
+            'h|help|?'  => \$params{help},
+            'v|version' => \$params{version},
 
             # options
-            'f|file=s' => \$h_params{config},
+            'f|file=s'      => \$params{config},
+            'u|username=s'  => \$params{username},
+            'w|password=s'  => \$params{password},
+            'p|principal=s' => \$params{principal},
+            'd|domain=s'    => \$params{domain},
+            'host=s'        => \$params{host},
+            'port=s'        => \$params{port},
+            'timeout=s'     => \$params{timeout},
+
         );
-        return %h_params;
+        return %params;
     }
 
 }
@@ -46,9 +68,27 @@ Collection of uth::ActiveDirectory packages to run on command line.
 =cut
 
 sub run {
-    my $self   = shift;
-    my %h_args = ();
-    %h_args = _h_process_command_line(%h_args);
+    my $self = shift;
+    my %args = ();
+    %args = _process_command_line(%args);
+    if ( $args{version} ) { print __PACKAGE__, ' Verion: ', $VERSION, $/; return; }
+    pod2usage( { -verbose => 1 } ) if ( $args{help} );
+    croak "No host is given!"      unless $args{host};
+    croak "No domain is given!"    unless $args{domain};
+    croak "No principal is given!" unless $args{principal};
+
+    my $obj = Auth::ActiveDirectory->new(
+        host      => $args{host},
+        port      => $args{port} || 389,
+        timeout   => $args{timeout} || 60,
+        domain    => $args{domain},
+        principal => $args{principal},
+    );
+    croak "No username is given!" unless $args{username};
+    croak "No password is given!" unless $args{password};
+    my $user = $obj->authenticate( $args{username}, $args{password} );
+    use DDP;
+    p $user;
 }
 
 1;    # End of uth::ActiveDirectory::CLI

@@ -15,7 +15,7 @@ our $VERSION = '0.01';
 use 5.18.0;
 use strict;
 use warnings FATAL => 'all';
-use Carp;
+use Carp qw/cluck/;
 use Net::LDAP qw[];
 use Net::LDAP::Constant qw[LDAP_INVALID_CREDENTIALS];
 my $ErrorCodes = {
@@ -77,6 +77,19 @@ my $ErrorCodes = {
 
 }
 
+=head2 new
+
+Constructor
+
+=cut
+
+sub new {
+    my $class = shift;
+    my $self  = {@_};
+    bless $self, $class;
+    return $self;
+}
+
 =head2 authenticate
 
 Basicaly the subroutine for authentication in the ActiveDirectory
@@ -84,15 +97,16 @@ Basicaly the subroutine for authentication in the ActiveDirectory
 =cut
 
 sub authenticate {
-    my ( $stg, $s_username, $s_auth_password ) = @_;
-    my $connection = _create_connection( $stg->{host}, $stg->{port}, $stg->{timeout} ) || return undef;
-    my $s_user = sprintf( '%s@%s', $s_username, $s_principal );
-    my $message = $connection->bind( $s_user, password => $s_auth_password );
-    return _parse_error_message($message) if ( _v_is_error( $message, $s_user ) );
-    my $s_domain = $stg->{domain};
+    my ( $self, $username, $password ) = @_;
+    my $connection  = _create_connection( $self->{host}, $self->{port}, $self->{timeout} ) || return undef;
+    my $s_principal = $self->{principal};
+    my $user        = sprintf( '%s@%s', $username, $s_principal );
+    my $message     = $connection->bind( $user, password => $password );
+    return _parse_error_message($message) if ( _v_is_error( $message, $user ) );
+    my $s_domain = $self->{domain};
     my $result   = $connection->search(    # perform a search
         base   => qq/dc=$s_principal,dc=$s_domain/,
-        filter => qq/(&(objectClass=person)(userPrincipalName=$s_user.$s_domain))/,
+        filter => qq/(&(objectClass=person)(userPrincipalName=$user.$s_domain))/,
     );
     foreach ( $result->entries ) {
         my $groups = [];
@@ -100,11 +114,11 @@ sub authenticate {
             push( @$groups, $1 ) if ( $group =~ m/^CN=(.*),OU=.*$/ );
         }
         return {
-            uid       => $s_username,
+            uid       => $username,
             firstname => $_->get_value(q/givenName/),
             surname   => $_->get_value(q/sn/),
             groups    => $groups,
-            user      => $s_user,
+            user      => $user,
         };
     }
     return undef;
@@ -114,15 +128,15 @@ sub authenticate {
 
 =cut
 
-sub _list_users {
-    my ( $stg, $o_session_user, $search_string ) = @_;
-    my $connection = _create_connection( $stg->{host}, $stg->{port}, $stg->{timeout} ) || return undef;
-    my $s_user     = $o_session_user->{user};
-    my $message    = $connection->bind( $s_user, password => $o_session_user->{password} );
+sub list_users {
+    my ( $self, $o_session_user, $search_string ) = @_;
+    my $connection = _create_connection( $self->{host}, $self->{port}, $self->{timeout} ) || return undef;
+    my $user       = $o_session_user->{user};
+    my $message    = $connection->bind( $user, password => $o_session_user->{password} );
 
-    return undef if ( _v_is_error( $message, $s_user ) );
-    my $s_principal = $stg->{principal};
-    my $s_domain    = $stg->{domain};
+    return undef if ( _v_is_error( $message, $user ) );
+    my $s_principal = $self->{principal};
+    my $s_domain    = $self->{domain};
     my $result      = $connection->search(
         base   => qq/dc=$s_principal,dc=$s_domain/,
         filter => qq/(&(objectClass=person)(name=$search_string*))/,

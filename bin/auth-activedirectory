@@ -33,11 +33,9 @@ Quick summary of what the module does.
 
 Perhaps a little code snippet.
 
-    $>auth-activedirectory -c
+    $>auth-activedirectory -h -u username -w secret --host='hostname' -d domain -p prinzipal
 
     $>auth-activedirectory -f /path/to/config
-
-    $>auth-activedirectory --ingore_file_diff
     
 =head1 OPTIONS
 
@@ -55,7 +53,7 @@ Perhaps a little code snippet.
 
 =head1 AUTHOR
 
-Mario Zieschang, C<< <mario.zieschang at unitedprint.com> >>
+Mario Zieschang, C<< <mziescha at cpan.org> >>
 
 =head1 BUGS
 
