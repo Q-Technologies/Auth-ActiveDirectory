@@ -1,0 +1,34 @@
+use 5.18.0;
+use strict;
+use warnings;
+use ExtUtils::MakeMaker;
+
+WriteMakefile(
+    NAME               => 'Auth::ActiveDirectory',
+    AUTHOR             => q{Mario Zieschang <mziescha@cpan.org>},
+    VERSION_FROM       => 'lib/Auth/ActiveDirectory.pm',
+    ABSTRACT_FROM      => 'lib/Auth/ActiveDirectory.pm',
+    LICENSE            => 'artistic_2',
+    PL_FILES           => {},
+    MIN_PERL_VERSION   => 5.18.0,
+    CONFIGURE_REQUIRES => {
+        'ExtUtils::MakeMaker' => 0,
+    },
+    PREREQ_PM => {
+        'Net::LDAP'           => 0,
+        'Net::LDAP::Constant' => 0,
+
+        #'ABC'              => 1.6,
+        #'Foo::Bar::Module' => 5.0401,
+    },
+    TEST_REQUIRES => {
+        'Pod::Coverage::TrustPod' => 0,
+        'Pod::Usage'              => 0,
+        'Test::CheckManifest'     => 0,
+        'Test::Pod::Coverage'     => 0,
+        'Test::Requires'          => 0,
+        'Test::Spelling'          => 0,
+    },
+    dist  => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
+    clean => { FILES    => 'Auth-ActiveDirectory-*' },
+);
