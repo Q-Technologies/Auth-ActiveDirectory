@@ -17,8 +17,6 @@ WriteMakefile(
         'Net::LDAP'           => 0,
         'Net::LDAP::Constant' => 0,
         'Carp'                => 0,
-        'Pod::Usage'          => 0,
-        'Getopt::Long'        => 0,
     },
     TEST_REQUIRES => {
         'Pod::Coverage::TrustPod' => 0,

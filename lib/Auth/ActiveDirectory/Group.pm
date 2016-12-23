@@ -37,6 +37,12 @@ sub new {
     return $self;
 }
 
+=head2 name
+
+Gettter/Setter for internatl hash key name.
+
+=cut
+
 sub name {
     return $_[0]->{name} unless $_[1];
     $_[0]->{name} = $_[1];

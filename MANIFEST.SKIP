@@ -1,1 +1,7 @@
 Dockerfile
+lib/Auth/ActiveDirectory/CLI.pm
+bin/auth-activedirectory
+.git/*
+ignore.txt
+MANIFEST.SKIP
+Auth-ActiveDirectory-*

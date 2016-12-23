@@ -37,11 +37,23 @@ sub new {
     return $self;
 }
 
+=head2 firstname
+
+Gettter/Setter for internatl hash key firstname.
+
+=cut
+
 sub firstname {
     return $_[0]->{firstname} unless $_[1];
     $_[0]->{firstname} = $_[1];
     return $_[0]->{firstname};
 }
+
+=head2 groups
+
+Gettter/Setter for internatl hash key groups.
+
+=cut
 
 sub groups {
     return $_[0]->{groups} unless $_[1];
@@ -49,17 +61,35 @@ sub groups {
     return $_[0]->{groups};
 }
 
+=head2 surname
+
+Gettter/Setter for internatl hash key surname.
+
+=cut
+
 sub surname {
     return $_[0]->{surname} unless $_[1];
     $_[0]->{surname} = $_[1];
     return $_[0]->{surname};
 }
 
+=head2 uid
+
+Gettter/Setter for internatl hash key uid.
+
+=cut
+
 sub uid {
     return $_[0]->{uid} unless $_[1];
     $_[0]->{uid} = $_[1];
     return $_[0]->{uid};
 }
+
+=head2 user
+
+Gettter/Setter for internatl hash key user.
+
+=cut
 
 sub user {
     return $_[0]->{user} unless $_[1];

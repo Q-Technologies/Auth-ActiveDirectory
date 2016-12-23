@@ -107,13 +107,13 @@ sub authenticate {
         base   => qq/dc=$s_principal,dc=$s_domain/,
         filter => qq/(&(objectClass=person)(userPrincipalName=$user.$s_domain))/,
     );
-    require Auth::ActiveDirectory::User;
-    require Auth::ActiveDirectory::Group;
     foreach ( $result->entries ) {
         my $groups = [];
+        require Auth::ActiveDirectory::Group;
         foreach my $group ( $_->get_value(q/memberOf/) ) {
             push( @$groups, Auth::ActiveDirectory::Group->new( name => $1 ) ) if ( $group =~ m/^CN=(.*),OU=.*$/ );
         }
+        require Auth::ActiveDirectory::User;
         return Auth::ActiveDirectory::User->new(
             uid       => $username,
             firstname => $_->get_value(q/givenName/),
@@ -142,10 +142,67 @@ sub list_users {
         base   => qq/dc=$s_principal,dc=$s_domain/,
         filter => qq/(&(objectClass=person)(name=$search_string*))/,
     );
-    my $return_names = [];
-    push( @$return_names, Auth::ActiveDirectory::User->new( name => $_->get_value(q/name/), uid => $_->get_value(q/sAMAccountName/) ) )
-      foreach ( $result->entries );
-    return $return_names;
+    return [ map { Auth::ActiveDirectory::User->new( name => $_->get_value(q/name/), uid => $_->get_value(q/sAMAccountName/) ) } $result->entries ];
+}
+
+=head2 host
+
+Gettter/Setter for internatl hash key host.
+
+=cut
+
+sub host {
+    return $_[0]->{host} unless $_[1];
+    $_[0]->{host} = $_[1];
+    return $_[0]->{host};
+}
+
+=head2 port
+
+Gettter/Setter for internatl hash key port.
+
+=cut
+
+sub port {
+    return $_[0]->{port} unless $_[1];
+    $_[0]->{port} = $_[1];
+    return $_[0]->{port};
+}
+
+=head2 timeout
+
+Gettter/Setter for internatl hash key timeout.
+
+=cut
+
+sub timeout {
+    return $_[0]->{timeout} unless $_[1];
+    $_[0]->{timeout} = $_[1];
+    return $_[0]->{timeout};
+}
+
+=head2 domain
+
+Gettter/Setter for internatl hash key domain.
+
+=cut
+
+sub domain {
+    return $_[0]->{domain} unless $_[1];
+    $_[0]->{domain} = $_[1];
+    return $_[0]->{domain};
+}
+
+=head2 principal
+
+Gettter/Setter for internatl hash key principal.
+
+=cut
+
+sub principal {
+    return $_[0]->{principal} unless $_[1];
+    $_[0]->{principal} = $_[1];
+    return $_[0]->{principal};
 }
 
 1;    # Auth::ActiveDirectory
