@@ -14,3 +14,4 @@ RUN    apt-get update && apt-get upgrade -y && apt-get install -y make curl g++ 
     && apt-get remove --purge -y curl \
     && apt-get autoremove -y && apt-get clean && apt-get autoclean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /root/.cpanm/* /usr/share/man/* /usr/local/share/man/*
+RUN cpanm Term::ReadKey

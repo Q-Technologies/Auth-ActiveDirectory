@@ -6,6 +6,7 @@ use Getopt::Long qw{:config bundling};
 use Auth::ActiveDirectory;
 use Pod::Usage;
 use Carp qw/croak/;
+use Term::ReadKey;
 
 =head1 NAME
 
@@ -84,7 +85,13 @@ sub run {
         principal => $args{principal},
     );
     croak "No username is given!" unless $args{username};
-    croak "No password is given!" unless $args{password};
+    unless ($args{password}) {
+        print 'Password: ';
+        ReadMode 2;
+        $args{password} = ReadLine;
+        ReadMode 0;
+        chomp $args{password};
+    }
     my $user = $obj->authenticate( $args{username}, $args{password} );
     use DDP;
     p $user;
