@@ -211,6 +211,20 @@ __END__
 
 =head1 SYNOPSIS
 
+    use Auth::ActiveDirectory;
+
+    my $obj = Auth::ActiveDirectory->new(
+        host      => $args{host},
+        port      => $args{port} || 389,
+        timeout   => $args{timeout} || 60,
+        domain    => $args{domain},
+        principal => $args{principal},
+    );
+
+    # returns object from logged in user or undef if it fails
+    my $user = $obj->authenticate( $args{username}, $args{password} );
+    
+
 =head1 AUTHOR
 
 Mario Zieschang, C<< <mziescha at cpan.org> >>
