@@ -1,6 +1,5 @@
 package Auth::ActiveDirectory::CLI;
 
-use 5.18.0;
 use strict;
 use warnings;
 use Getopt::Long qw{:config bundling};

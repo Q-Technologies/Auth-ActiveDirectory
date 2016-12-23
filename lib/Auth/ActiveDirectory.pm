@@ -12,7 +12,6 @@ Version 0.01
 
 our $VERSION = '0.01';
 
-use 5.18.0;
 use strict;
 use warnings FATAL => 'all';
 use Carp qw/cluck/;
