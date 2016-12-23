@@ -39,7 +39,7 @@ sub new {
 
 =head2 firstname
 
-Gettter/Setter for internatl hash key firstname.
+Getter/Setter for internal hash key firstname.
 
 =cut
 
@@ -51,7 +51,7 @@ sub firstname {
 
 =head2 groups
 
-Gettter/Setter for internatl hash key groups.
+Getter/Setter for internal hash key groups.
 
 =cut
 
@@ -63,7 +63,7 @@ sub groups {
 
 =head2 surname
 
-Gettter/Setter for internatl hash key surname.
+Getter/Setter for internal hash key surname.
 
 =cut
 
@@ -75,7 +75,7 @@ sub surname {
 
 =head2 uid
 
-Gettter/Setter for internatl hash key uid.
+Getter/Setter for internal hash key uid.
 
 =cut
 
@@ -87,7 +87,7 @@ sub uid {
 
 =head2 user
 
-Gettter/Setter for internatl hash key user.
+Getter/Setter for internal hash key user.
 
 =cut
 

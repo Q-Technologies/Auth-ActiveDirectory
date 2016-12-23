@@ -39,7 +39,7 @@ sub new {
 
 =head2 name
 
-Gettter/Setter for internatl hash key name.
+Getter/Setter for internal hash key name.
 
 =cut
 

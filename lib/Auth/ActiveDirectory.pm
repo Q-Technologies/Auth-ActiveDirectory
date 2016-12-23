@@ -147,7 +147,7 @@ sub list_users {
 
 =head2 host
 
-Gettter/Setter for internatl hash key host.
+Getter/Setter for internal hash key host.
 
 =cut
 
@@ -159,7 +159,7 @@ sub host {
 
 =head2 port
 
-Gettter/Setter for internatl hash key port.
+Getter/Setter for internal hash key port.
 
 =cut
 
@@ -171,7 +171,7 @@ sub port {
 
 =head2 timeout
 
-Gettter/Setter for internatl hash key timeout.
+Getter/Setter for internal hash key timeout.
 
 =cut
 
@@ -183,7 +183,7 @@ sub timeout {
 
 =head2 domain
 
-Gettter/Setter for internatl hash key domain.
+Getter/Setter for internal hash key domain.
 
 =cut
 
@@ -195,7 +195,7 @@ sub domain {
 
 =head2 principal
 
-Gettter/Setter for internatl hash key principal.
+Getter/Setter for internal hash key principal.
 
 =cut
 
