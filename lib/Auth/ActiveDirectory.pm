@@ -107,18 +107,20 @@ sub authenticate {
         base   => qq/dc=$s_principal,dc=$s_domain/,
         filter => qq/(&(objectClass=person)(userPrincipalName=$user.$s_domain))/,
     );
+    require Auth::ActiveDirectory::User;
+    require Auth::ActiveDirectory::Group;
     foreach ( $result->entries ) {
         my $groups = [];
         foreach my $group ( $_->get_value(q/memberOf/) ) {
-            push( @$groups, $1 ) if ( $group =~ m/^CN=(.*),OU=.*$/ );
+            push( @$groups, Auth::ActiveDirectory::Group->new( name => $1 ) ) if ( $group =~ m/^CN=(.*),OU=.*$/ );
         }
-        return {
+        return Auth::ActiveDirectory::User->new(
             uid       => $username,
             firstname => $_->get_value(q/givenName/),
             surname   => $_->get_value(q/sn/),
             groups    => $groups,
             user      => $user,
-        };
+        );
     }
     return undef;
 }
@@ -141,7 +143,8 @@ sub list_users {
         filter => qq/(&(objectClass=person)(name=$search_string*))/,
     );
     my $return_names = [];
-    push( @$return_names, { name => $_->get_value(q/name/), uid => $_->get_value(q/sAMAccountName/), } ) foreach ( $result->entries );
+    push( @$return_names, Auth::ActiveDirectory::User->new( name => $_->get_value(q/name/), uid => $_->get_value(q/sAMAccountName/) ) )
+      foreach ( $result->entries );
     return $return_names;
 }
 
