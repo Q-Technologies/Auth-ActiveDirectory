@@ -1,4 +1,3 @@
-use 5.18.0;
 use strict;
 use warnings;
 use ExtUtils::MakeMaker;
@@ -10,7 +9,7 @@ WriteMakefile(
     ABSTRACT_FROM      => 'lib/Auth/ActiveDirectory.pm',
     LICENSE            => 'artistic_2',
     PL_FILES           => {},
-    MIN_PERL_VERSION   => 5.18.0,
+    MIN_PERL_VERSION   => 5.008,
     CONFIGURE_REQUIRES => {
         'ExtUtils::MakeMaker' => 0,
     },
