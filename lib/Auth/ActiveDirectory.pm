@@ -86,6 +86,7 @@ sub new {
     my $class = shift;
     my $self  = {@_};
     bless $self, $class;
+    $self->{ldap} = _create_connection( $self->{host}, $self->{port} || 389, $self->{timeout} || 60 ) unless $self->{ldap};
     return $self;
 }
 
@@ -97,13 +98,13 @@ Basicaly the subroutine for authentication in the ActiveDirectory
 
 sub authenticate {
     my ( $self, $username, $password ) = @_;
-    my $connection  = _create_connection( $self->{host}, $self->{port}, $self->{timeout} ) || return undef;
+    return undef unless $self->{ldap};
     my $s_principal = $self->{principal};
     my $user        = sprintf( '%s@%s', $username, $s_principal );
-    my $message     = $connection->bind( $user, password => $password );
+    my $message     = $self->{ldap}->bind( $user, password => $password );
     return _parse_error_message($message) if ( _v_is_error( $message, $user ) );
     my $s_domain = $self->{domain};
-    my $result   = $connection->search(    # perform a search
+    my $result   = $self->{ldap}->search(    # perform a search
         base   => qq/dc=$s_principal,dc=$s_domain/,
         filter => qq/(&(objectClass=person)(userPrincipalName=$user.$s_domain))/,
     );
@@ -131,7 +132,7 @@ sub authenticate {
 
 sub list_users {
     my ( $self, $o_session_user, $search_string ) = @_;
-    my $connection = _create_connection( $self->{host}, $self->{port}, $self->{timeout} ) || return undef;
+    my $connection = $self->{self} || return undef;
     my $user       = $o_session_user->{user};
     my $message    = $connection->bind( $user, password => $o_session_user->{password} );
 

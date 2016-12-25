@@ -22,4 +22,10 @@ RUN    apt-get update && apt-get upgrade -y && apt-get install -y make curl g++ 
     && apt-get autoremove -y && apt-get clean && apt-get autoclean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /root/.cpanm/* /usr/share/man/* /usr/local/share/man/*
 
-WORKDIR /App
+RUN    cpanm \
+        Test::Net::LDAP \
+        Test::Net::LDAP::Mock \
+        Test::Net::LDAP::Util \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /root/.cpanm/* /usr/share/man/* /usr/local/share/man/*
+
+WORKDIR /app
