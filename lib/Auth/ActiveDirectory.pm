@@ -99,19 +99,22 @@ Basicaly the subroutine for authentication in the ActiveDirectory
 sub authenticate {
     my ( $self, $username, $password ) = @_;
     return undef unless $self->{ldap};
-    my $s_principal = $self->{principal};
-    my $user        = sprintf( '%s@%s', $username, $s_principal );
-    my $message     = $self->{ldap}->bind( $user, password => $password );
+    my $user = sprintf( '%s@%s', $username, $self->{domain} );
+    my $message = $self->{ldap}->bind( $user, password => $password );
     return _parse_error_message($message) if ( _v_is_error( $message, $user ) );
-    my $s_domain = $self->{domain};
-    my $result   = $self->{ldap}->search(    # perform a search
-        base   => qq/dc=$s_principal,dc=$s_domain/,
-        filter => qq/(&(objectClass=person)(userPrincipalName=$user.$s_domain))/,
+    my $result = $self->{ldap}->search(    # perform a search
+        base => qq/dc=$self->{domain},dc=$self->{principal}/,
+
+        #filter => qq/(&(objectClass=person)(userPrincipalName=$user.$self->{principal}))/,
     );
+    use Data::Dumper;
+    use DDP;
     foreach ( $result->entries ) {
         my $groups = [];
         require Auth::ActiveDirectory::Group;
+        p $_;
         foreach my $group ( $_->get_value(q/memberOf/) ) {
+            warn Dumper $group;
             push( @$groups, Auth::ActiveDirectory::Group->new( name => $1 ) ) if ( $group =~ m/^CN=(.*),OU=.*$/ );
         }
         require Auth::ActiveDirectory::User;
