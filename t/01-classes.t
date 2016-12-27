@@ -1,7 +1,7 @@
 #!perl -T
 use strict;
 use warnings;
-use Test::More tests => 26;
+use Test::More tests => 31;
 
 use_ok('Auth::ActiveDirectory')        || print "Bail out!\n";
 use_ok('Auth::ActiveDirectory::User')  || print "Bail out!\n";
@@ -25,11 +25,13 @@ is( $obj->name('test'), 'test' );
 
 $obj = new_ok(
     'Auth::ActiveDirectory::User' => [
-        uid       => 'someuser@somewhere',
-        firstname => 'firstname',
-        surname   => 'surname',
-        groups    => [ Auth::ActiveDirectory::Group->new( name => 'Group 1' ), Auth::ActiveDirectory::Group->new( name => 'Group 2' ), ],
-        user      => 'someuser',
+        uid         => 'someuser@somewhere',
+        firstname   => 'firstname',
+        surname     => 'surname',
+        groups      => [ Auth::ActiveDirectory::Group->new( name => 'Group 1' ), Auth::ActiveDirectory::Group->new( name => 'Group 2' ), ],
+        user        => 'someuser',
+        displayName => 'firstname surname',
+        mail        => 'firstname.surname@example.com',
     ]
 );
 
@@ -37,7 +39,12 @@ is( $obj->uid,                            'someuser@somewhere' );
 is( $obj->firstname,                      'firstname', );
 is( $obj->surname,                        'surname', );
 is( $obj->user,                           'someuser' );
+is( $obj->displayName,                    'firstname surname' );
+is( $obj->mail,                           'firstname.surname@example.com' );
 is( $obj->uid('someotheruser@somewhere'), 'someotheruser@somewhere' );
 is( $obj->firstname('someotheruser'),     'someotheruser' );
 is( $obj->surname('other'),               'other' );
 is( $obj->user('someother'),              'someother' );
+is( $obj->displayName('Full Name'),       'Full Name' );
+is( $obj->mail('new.mail@example.com'),   'new.mail@example.com' );
+is( scalar @{ $obj->groups },             2 );

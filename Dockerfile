@@ -2,7 +2,7 @@ FROM ubuntu:16.04
 
 MAINTAINER Mario Zieschang <mzieschang@unitedprint.com>
 
-RUN    apt-get update && apt-get upgrade -y && apt-get install -y make curl g++ gcc build-essential \
+RUN    apt-get update && apt-get upgrade -y && apt-get install -y make curl g++ gcc libssl-dev build-essential \
     && curl -L https://cpanmin.us | perl - App::cpanminus \
     && cpanm \
         Net::LDAP \
@@ -19,6 +19,8 @@ RUN    apt-get update && apt-get upgrade -y && apt-get install -y make curl g++ 
         Test::Requires \
         Test::Spelling \
         Test::Net::LDAP \
+        Devel::Cover \
+        Devel::Cover::Report::Coveralls \
     && apt-get remove --purge -y curl \
     && apt-get autoremove -y && apt-get clean && apt-get autoclean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /root/.cpanm/* /usr/share/man/* /usr/local/share/man/*

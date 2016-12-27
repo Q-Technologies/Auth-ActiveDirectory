@@ -111,11 +111,14 @@ sub authenticate {
         require Auth::ActiveDirectory::Group;
         require Auth::ActiveDirectory::User;
         return Auth::ActiveDirectory::User->new(
-            uid       => $username,
-            user      => $user,
-            firstname => $_->get_value(q/givenName/),
-            surname   => $_->get_value(q/sn/),
-            groups    => [ map { Auth::ActiveDirectory::Group->new( name => $1 ) } grep { m/^CN=(.*),OU=.*$/ } $_->get_value(q/memberOf/) ],
+            uid         => $username,
+            user        => $user,
+            firstname   => $_->get_value(q/givenName/),
+            surname     => $_->get_value(q/sn/),
+            displayName => $_->get_value(q/displayName/),
+            mail        => $_->get_value(q/mail/),
+            groups      => [ map { Auth::ActiveDirectory::Group->new( name => $1 ) } grep { m/^CN=(.*),OU=.*$/ } $_->get_value(q/memberOf/) ],
+
         );
     }
     return undef;

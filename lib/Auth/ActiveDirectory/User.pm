@@ -96,6 +96,30 @@ sub user {
     return $_[0]->{user};
 }
 
+=head2 displayName
+
+Getter/Setter for internal hash key displayName.
+
+=cut
+
+sub displayName {
+    return $_[0]->{displayName} unless $_[1];
+    $_[0]->{displayName} = $_[1];
+    return $_[0]->{displayName};
+}
+
+=head2 mail
+
+Getter/Setter for internal hash key mail.
+
+=cut
+
+sub mail {
+    return $_[0]->{mail} unless $_[1];
+    $_[0]->{mail} = $_[1];
+    return $_[0]->{mail};
+}
+
 1;    # End of uth::ActiveDirectory::User
 
 __END__
