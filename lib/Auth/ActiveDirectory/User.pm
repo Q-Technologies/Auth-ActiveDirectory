@@ -120,6 +120,37 @@ sub mail {
     return $_[0]->{mail};
 }
 
+=head2 last_password_set
+
+Getter/Setter for internal hash key last_password_set.
+Timestamp is converted to unix timestamp, there's no reason to use these
+strange AD timestamp.
+
+=cut
+
+sub last_password_set {
+    return $_[0]->{last_password_set} unless $_[1];
+    $_[0]->{last_password_set} = $_[1];
+    return $_[0]->{last_password_set};
+}
+
+=head2 account_expires
+
+Getter/Setter for internal hash key last_password_set.
+Timestamp is converted to unix timestamp, there's no reason to use these
+strange AD timestamp.
+undef means account never expires
+
+=cut
+
+sub account_expires {
+    return $_[0]->{account_expires} unless $_[1];
+    $_[0]->{account_expires} = $_[1];
+    return $_[0]->{account_expires};
+}
+
+
+
 1;    # End of uth::ActiveDirectory::User
 
 __END__

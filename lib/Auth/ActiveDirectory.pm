@@ -39,6 +39,17 @@ my $ErrorCodes = {
 
 {
 
+=head2 _ad2unixtimestamp
+
+This value represents the number of 100-nanosecond intervals since January 1, 1601 (UTC).
+https://msdn.microsoft.com
+
+ad_timestamp / nanoseconds - offset to 1601
+
+=cut
+
+    sub _ad2unixtimestamp { $_[0] / 10000000 - 11644473600 }
+
 =head2 _create_connection
 
 =cut
@@ -111,13 +122,18 @@ sub authenticate {
         require Auth::ActiveDirectory::Group;
         require Auth::ActiveDirectory::User;
         return Auth::ActiveDirectory::User->new(
-            uid          => $username,
-            user         => $user,
-            firstname    => $_->get_value(q/givenName/),
-            surname      => $_->get_value(q/sn/),
-            display_name => $_->get_value(q/displayName/),
-            mail         => $_->get_value(q/mail/),
-            groups       => [ map { m/^CN=(.*),OU=.*$/ ? Auth::ActiveDirectory::Group->new( name => $1 ) : () } $_->get_value(q/memberOf/) ],
+            uid               => $username,
+            user              => $user,
+            firstname         => $_->get_value(q/givenName/),
+            surname           => $_->get_value(q/sn/),
+            display_name      => $_->get_value(q/displayName/),
+            mail              => $_->get_value(q/mail/),
+            last_password_set => _ad2unixtimestamp( $_->get_value('pwdLastSet') ),
+
+            # A value of 0 or 0x7FFFFFFFFFFFFFFF (9223372036854775807) indicates that the account never expires.
+            # https://msdn.microsoft.com/en-us/library/ms675098(v=vs.85).aspx
+            account_expires => ( $_->get_value('accountExpires') != 9223372036854775807 ) ? _ad2unixtimestamp( $_->get_value('accountExpires') ) : undef,
+            groups => [ map { m/^CN=(.*),OU=.*$/ ? Auth::ActiveDirectory::Group->new( name => $1 ) : () } $_->get_value(q/memberOf/) ],
 
         );
     }
@@ -129,11 +145,9 @@ sub authenticate {
 =cut
 
 sub list_users {
-    my ( $self, $o_session_user, $search_string ) = @_;
+    my ( $self, $user, $password, $search_string ) = @_;
     my $connection = $self->{self} || return undef;
-    my $user       = $o_session_user->{user};
-    my $message    = $connection->bind( $user, password => $o_session_user->{password} );
-
+    my $message = $connection->bind( $user, password => $password );
     return undef if ( _v_is_error( $message, $user ) );
     my $result = $connection->search(
         base   => $self->{base},
