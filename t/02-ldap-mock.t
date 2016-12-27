@@ -1,7 +1,6 @@
-#!perl -T
 use strict;
 use warnings;
-use Test::More tests => 3;
+use Test::More tests => 4;
 use Test::Net::LDAP;
 use Test::Net::LDAP::Mock;
 use Test::Net::LDAP::Util qw(ldap_mockify);
@@ -66,6 +65,7 @@ $ldap->add(
 
 my $obj = Auth::ActiveDirectory->new( ldap => $ldap, domain => 'example', principal => 'com', );
 my $user = $obj->authenticate( 'user1', 'password1' );
-is( $user->firstname, 'Mario' );
-is( $user->surname,   'Zieschang' );
-is( $user->uid,       'user1' );
+is( $user->firstname,          'Mario' );
+is( $user->surname,            'Zieschang' );
+is( $user->uid,                'user1' );
+is( scalar @{ $user->groups }, 6 );

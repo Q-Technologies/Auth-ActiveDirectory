@@ -1,5 +1,8 @@
 Auth-ActiveDirectory
 
+[![Build Status](https://travis-ci.org/mziescha/Auth-ActiveDirectory.svg?branch=master)](https://travis-ci.org/mziescha/Auth-ActiveDirectory)
+[![Coverage Status](https://coveralls.io/repos/mziescha/Auth-ActiveDirectory/badge.svg)](https://coveralls.io/r/mziescha/Auth-ActiveDirectory)
+
 The README is used to introduce the module and provide instructions on
 how to install the module, any machine dependencies it may have (for
 example C compilers and installed libraries) and any other information

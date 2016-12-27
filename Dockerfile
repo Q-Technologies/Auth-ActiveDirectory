@@ -6,7 +6,6 @@ RUN    apt-get update && apt-get upgrade -y && apt-get install -y make curl g++ 
     && curl -L https://cpanmin.us | perl - App::cpanminus \
     && cpanm \
         Net::LDAP \
-        Net::LDAP::Constant \
         Carp \
         Pod::Usage \
         Getopt::Long \
@@ -15,17 +14,13 @@ RUN    apt-get update && apt-get upgrade -y && apt-get install -y make curl g++ 
         Pod::Coverage::TrustPod \
         Pod::Usage \
         Test::CheckManifest \
+        Test::Pod \
         Test::Pod::Coverage \
         Test::Requires \
         Test::Spelling \
+        Test::Net::LDAP \
     && apt-get remove --purge -y curl \
     && apt-get autoremove -y && apt-get clean && apt-get autoclean \
-    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /root/.cpanm/* /usr/share/man/* /usr/local/share/man/*
-
-RUN    cpanm \
-        Test::Net::LDAP \
-        Test::Net::LDAP::Mock \
-        Test::Net::LDAP::Util \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /root/.cpanm/* /usr/share/man/* /usr/local/share/man/*
 
 WORKDIR /app

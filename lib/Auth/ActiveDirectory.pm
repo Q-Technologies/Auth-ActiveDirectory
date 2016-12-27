@@ -86,6 +86,7 @@ sub new {
     my $class = shift;
     my $self  = {@_};
     bless $self, $class;
+    $self->{base} = qq/dc=$self->{domain},dc=$self->{principal}/ unless $self->{base};
     $self->{ldap} = _create_connection( $self->{host}, $self->{port} || 389, $self->{timeout} || 60 ) unless $self->{ldap};
     return $self;
 }
@@ -102,23 +103,19 @@ sub authenticate {
     my $user = sprintf( '%s@%s', $username, $self->{domain} );
     my $message = $self->{ldap}->bind( $user, password => $password );
     return _parse_error_message($message) if ( _v_is_error( $message, $user ) );
-    my $result = $self->{ldap}->search(    # perform a search
-        base => qq/dc=$self->{domain},dc=$self->{principal}/,
+    my $result = $self->{ldap}->search(
+        base   => $self->{base},
         filter => qq/(&(objectClass=person)(userPrincipalName=$user.$self->{principal}))/,
     );
     foreach ( $result->entries ) {
-        my $groups = [];
         require Auth::ActiveDirectory::Group;
-        foreach my $group ( $_->get_value(q/memberOf/) ) {
-            push( @$groups, Auth::ActiveDirectory::Group->new( name => $1 ) ) if ( $group =~ m/^CN=(.*),OU=.*$/ );
-        }
         require Auth::ActiveDirectory::User;
         return Auth::ActiveDirectory::User->new(
             uid       => $username,
+            user      => $user,
             firstname => $_->get_value(q/givenName/),
             surname   => $_->get_value(q/sn/),
-            groups    => $groups,
-            user      => $user,
+            groups    => [ map { Auth::ActiveDirectory::Group->new( name => $1 ) } grep { m/^CN=(.*),OU=.*$/ } $_->get_value(q/memberOf/) ],
         );
     }
     return undef;
@@ -135,10 +132,8 @@ sub list_users {
     my $message    = $connection->bind( $user, password => $o_session_user->{password} );
 
     return undef if ( _v_is_error( $message, $user ) );
-    my $s_principal = $self->{principal};
-    my $s_domain    = $self->{domain};
-    my $result      = $connection->search(
-        base   => qq/dc=$s_principal,dc=$s_domain/,
+    my $result = $connection->search(
+        base   => $self->{base},
         filter => qq/(&(objectClass=person)(name=$search_string*))/,
     );
     return [ map { Auth::ActiveDirectory::User->new( name => $_->get_value(q/name/), uid => $_->get_value(q/sAMAccountName/) ) } $result->entries ];

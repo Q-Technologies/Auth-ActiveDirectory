@@ -14,9 +14,8 @@ WriteMakefile(
         'ExtUtils::MakeMaker' => 0,
     },
     PREREQ_PM => {
-        'Net::LDAP'           => 0,
-        'Net::LDAP::Constant' => 0,
-        'Carp'                => 0,
+        'Carp'      => 0,
+        'Net::LDAP' => 0,
     },
     TEST_REQUIRES => {
         'Pod::Coverage::TrustPod' => 0,
@@ -25,6 +24,7 @@ WriteMakefile(
         'Test::Pod::Coverage'     => 0,
         'Test::Requires'          => 0,
         'Test::Spelling'          => 0,
+        'Test::Net::LDAP'         => 0,
     },
     dist  => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean => { FILES    => 'Auth-ActiveDirectory-*' },

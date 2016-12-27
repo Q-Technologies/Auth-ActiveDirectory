@@ -9,6 +9,7 @@ README.md
 xt/boilerplate.t
 t/00-load.t
 t/01-classes.t
+t/02-ldap-mock.t
 t/manifest.t
 t/pod-coverage.t
 t/pod.t

@@ -5,3 +5,5 @@ bin/auth-activedirectory
 ignore.txt
 MANIFEST.SKIP
 Auth-ActiveDirectory-*
+.travis.yml
+cover_db/*

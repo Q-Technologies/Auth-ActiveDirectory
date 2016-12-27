@@ -2,7 +2,6 @@ package Auth::ActiveDirectory::User;
 
 use strict;
 use warnings;
-use Auth::ActiveDirectory;
 
 =head1 NAME
 
