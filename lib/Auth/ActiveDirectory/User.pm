@@ -96,16 +96,16 @@ sub user {
     return $_[0]->{user};
 }
 
-=head2 displayName
+=head2 display_name
 
-Getter/Setter for internal hash key displayName.
+Getter/Setter for internal hash key display_name.
 
 =cut
 
-sub displayName {
-    return $_[0]->{displayName} unless $_[1];
-    $_[0]->{displayName} = $_[1];
-    return $_[0]->{displayName};
+sub display_name {
+    return $_[0]->{display_name} unless $_[1];
+    $_[0]->{display_name} = $_[1];
+    return $_[0]->{display_name};
 }
 
 =head2 mail
