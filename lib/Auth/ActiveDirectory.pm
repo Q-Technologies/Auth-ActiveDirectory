@@ -117,7 +117,7 @@ sub authenticate {
             surname      => $_->get_value(q/sn/),
             display_name => $_->get_value(q/displayName/),
             mail         => $_->get_value(q/mail/),
-            groups       => [ map { Auth::ActiveDirectory::Group->new( name => $1 ) } grep { m/^CN=(.*),OU=.*$/ } $_->get_value(q/memberOf/) ],
+            groups       => [ map { m/^CN=(.*),OU=.*$/ ? Auth::ActiveDirectory::Group->new( name => $1 ) : () } $_->get_value(q/memberOf/) ],
 
         );
     }

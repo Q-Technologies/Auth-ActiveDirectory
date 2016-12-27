@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More tests => 4;
+use Test::More tests => 8;
 use Test::Net::LDAP;
 use Test::Net::LDAP::Mock;
 use Test::Net::LDAP::Util qw(ldap_mockify);
@@ -18,11 +18,7 @@ my $ldap = Test::Net::LDAP::Mock->new( '127.0.0.1', 389 );
 $ldap->add(
     'uid=user1, cn=Mario Zieschang, ou=Zieschang, dc=example, dc=com',
     attrs => [
-        memberOf => [
-            "CN=dockers,OU=groups,DC=example,DC=com",                    "CN=dev-exchange_change,OU=groups,DC=example,DC=com",
-            "CN=ad-jira-users_change,OU=groups,DC=example,DC=com",       "CN=ad-confluence-it_change,OU=groups,DC=example,DC=com",
-            "CN=ad-confluence-users_change,OU=groups,DC=example,DC=com", "CN=developers,OU=groups,DC=example,DC=com",
-        ],
+        memberOf          => [ "CN=dockers,OU=groups,DC=example,DC=com", "CN=admin,OU=groups,DC=example,DC=com", "CN=github,OU=groups,DC=example,DC=com" ],
         objectClass       => 'person',
         userPrincipalName => 'user1@example.com',
         givenName         => 'Mario',
@@ -33,11 +29,7 @@ $ldap->add(
 $ldap->add(
     'cn=Dominic Sonntag, ou=groups, dc=example, dc=com',
     attrs => [
-        memberOf => [
-            "CN=dockers,OU=groups,DC=example,DC=com",                    "CN=dev-exchange_change,OU=groups,DC=example,DC=com",
-            "CN=ad-jira-users_change,OU=groups,DC=example,DC=com",       "CN=ad-confluence-it_change,OU=groups,DC=example,DC=com",
-            "CN=ad-confluence-users_change,OU=groups,DC=example,DC=com", "CN=developers,OU=groups,DC=example,DC=com",
-        ],
+        memberOf          => [ "CN=dockers,OU=groups,DC=example,DC=com", "CN=admin,OU=groups,DC=example,DC=com", "CN=github,OU=groups,DC=example,DC=com", ],
         objectClass       => 'person',
         userPrincipalName => 'user2@example.com',
         givenName         => 'Dominic',
@@ -48,11 +40,7 @@ $ldap->add(
 $ldap->add(
     'cn=user 3, ou=groups, dc=example, dc=com',
     attrs => [
-        memberOf => [
-            "CN=dockers,OU=groups,DC=example,DC=com",                    "CN=dev-exchange_change,OU=groups,DC=example,DC=com",
-            "CN=ad-jira-users_change,OU=groups,DC=example,DC=com",       "CN=ad-confluence-it_change,OU=groups,DC=example,DC=com",
-            "CN=ad-confluence-users_change,OU=groups,DC=example,DC=com", "CN=developers,OU=groups,DC=example,DC=com",
-        ],
+        memberOf          => [ "CN=dockers,OU=groups,DC=example,DC=com", "CN=ad-admin,OU=groups,DC=example,DC=com", ],
         objectClass       => 'person',
         userPrincipalName => 'user3@example.com',
         givenName         => 'user3',
@@ -66,4 +54,8 @@ my $user = $obj->authenticate( 'user1', 'password1' );
 is( $user->firstname,          'Mario' );
 is( $user->surname,            'Zieschang' );
 is( $user->uid,                'user1' );
-is( scalar @{ $user->groups }, 6 );
+is( scalar @{ $user->groups }, 3 );
+ok( defined $_->name, 'Group name should be defined' ) foreach @{ $user->groups };
+
+$user = $obj->authenticate( 'user3', 'password3' );
+is( scalar @{ $user->groups }, 2 );
