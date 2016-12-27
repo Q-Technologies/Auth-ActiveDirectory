@@ -98,7 +98,7 @@ sub new {
     my $self  = {@_};
     bless $self, $class;
     $self->{base} = qq/dc=$self->{domain},dc=$self->{principal}/ unless $self->{base};
-    $self->{ldap} = _create_connection( $self->{host}, $self->{port} || 389, $self->{timeout} || 60 ) unless $self->{ldap};
+    $self->{ldap} = _create_connection( $self->{host}, $self->{port}, $self->{timeout} ) unless $self->{ldap};
     return $self;
 }
 
@@ -146,7 +146,7 @@ sub authenticate {
 
 sub list_users {
     my ( $self, $user, $password, $search_string ) = @_;
-    my $connection = $self->{self} || return undef;
+    my $connection = $self->{ldap} || return undef;
     my $message = $connection->bind( $user, password => $password );
     return undef if ( _v_is_error( $message, $user ) );
     my $result = $connection->search(
