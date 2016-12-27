@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More tests => 12;
+use Test::More tests => 13;
 use Test::Net::LDAP;
 use Test::Net::LDAP::Mock;
 use Test::Net::LDAP::Util qw(ldap_mockify);
@@ -68,10 +68,11 @@ $ldap->add(
 my $obj = Auth::ActiveDirectory->new( ldap => $ldap, domain => 'example', principal => 'org', );
 my $user = $obj->authenticate( 'mziescha', 'password1' );
 
-is( $user->firstname,         'Mario' );
-is( $user->surname,           'Zieschang' );
-is( $user->uid,               'mziescha' );
-is( $user->mail,              'mziescha@cpan.org' );
+is( $user->firstname,    'Mario' );
+is( $user->surname,      'Zieschang' );
+is( $user->display_name, 'Mario Zieschang' );
+is( $user->uid,          'mziescha' );
+is( $user->mail,         'mziescha@cpan.org' );
 is( $user->last_password_set, 1482869060 );
 is( $user->account_expires,   undef );
 

@@ -85,6 +85,15 @@ ad_timestamp / nanoseconds - offset to 1601
         return $ErrorCodes->{$errorcode};
     }
 
+=head2 _search_users
+
+=cut
+
+    sub _search_users {
+        my ( $self, $filter ) = @_;
+        return $self->ldap->search( base => $self->base, filter => $filter );
+    }
+
 }
 
 =head2 new
@@ -110,14 +119,11 @@ Basicaly the subroutine for authentication in the ActiveDirectory
 
 sub authenticate {
     my ( $self, $username, $password ) = @_;
-    return undef unless $self->{ldap};
-    my $user = sprintf( '%s@%s', $username, $self->{domain} );
-    my $message = $self->{ldap}->bind( $user, password => $password );
+    return undef unless $self->ldap;
+    my $user = sprintf( '%s@%s', $username, $self->domain );
+    my $message = $self->ldap->bind( $user, password => $password );
     return _parse_error_message($message) if ( _v_is_error( $message, $user ) );
-    my $result = $self->{ldap}->search(
-        base   => $self->{base},
-        filter => qq/(&(objectClass=person)(userPrincipalName=$user.$self->{principal}))/,
-    );
+    my $result = $self->_search_users( qq/(&(objectClass=person)(userPrincipalName=$user./ . $self->principal . '))' );
     foreach ( $result->entries ) {
         require Auth::ActiveDirectory::Group;
         require Auth::ActiveDirectory::User;
@@ -146,13 +152,10 @@ sub authenticate {
 
 sub list_users {
     my ( $self, $user, $password, $search_string ) = @_;
-    my $connection = $self->{ldap} || return undef;
+    my $connection = $self->ldap || return undef;
     my $message = $connection->bind( $user, password => $password );
     return undef if ( _v_is_error( $message, $user ) );
-    my $result = $connection->search(
-        base   => $self->{base},
-        filter => qq/(&(objectClass=person)(name=$search_string*))/,
-    );
+    my $result = $self->_search_users(qq/(&(objectClass=person)(name=$search_string*))/);
     return [ map { Auth::ActiveDirectory::User->new( name => $_->get_value(q/name/), uid => $_->get_value(q/sAMAccountName/) ) } $result->entries ];
 }
 
@@ -214,6 +217,30 @@ sub principal {
     return $_[0]->{principal} unless $_[1];
     $_[0]->{principal} = $_[1];
     return $_[0]->{principal};
+}
+
+=head2 ldap
+
+Getter/Setter for internal hash key ldap.
+
+=cut
+
+sub ldap {
+    return $_[0]->{ldap} unless $_[1];
+    $_[0]->{ldap} = $_[1];
+    return $_[0]->{ldap};
+}
+
+=head2 base
+
+Getter/Setter for internal hash key base.
+
+=cut
+
+sub base {
+    return $_[0]->{base} unless $_[1];
+    $_[0]->{base} = $_[1];
+    return $_[0]->{base};
 }
 
 1;    # Auth::ActiveDirectory
