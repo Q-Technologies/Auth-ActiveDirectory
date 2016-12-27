@@ -104,17 +104,12 @@ sub authenticate {
     return _parse_error_message($message) if ( _v_is_error( $message, $user ) );
     my $result = $self->{ldap}->search(    # perform a search
         base => qq/dc=$self->{domain},dc=$self->{principal}/,
-
-        #filter => qq/(&(objectClass=person)(userPrincipalName=$user.$self->{principal}))/,
+        filter => qq/(&(objectClass=person)(userPrincipalName=$user.$self->{principal}))/,
     );
-    use Data::Dumper;
-    use DDP;
     foreach ( $result->entries ) {
         my $groups = [];
         require Auth::ActiveDirectory::Group;
-        p $_;
         foreach my $group ( $_->get_value(q/memberOf/) ) {
-            warn Dumper $group;
             push( @$groups, Auth::ActiveDirectory::Group->new( name => $1 ) ) if ( $group =~ m/^CN=(.*),OU=.*$/ );
         }
         require Auth::ActiveDirectory::User;
