@@ -21,4 +21,8 @@ eval "use Pod::Coverage $min_pc";
 plan skip_all => "Pod::Coverage $min_pc required for testing POD coverage"
     if $@;
 
-all_pod_coverage_ok();
+plan tests => 3;
+
+pod_coverage_ok("Auth::ActiveDirectory");
+pod_coverage_ok("Auth::ActiveDirectory::Group");
+pod_coverage_ok("Auth::ActiveDirectory::User");
