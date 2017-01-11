@@ -6,11 +6,11 @@ Auth::ActiveDirectory - Authentication module for MS ActiveDirectory
 
 =head1 VERSION
 
-Version 0.01
+Version 0.02
 
 =cut
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 use strict;
 use warnings FATAL => 'all';
@@ -58,7 +58,7 @@ ad_timestamp / nanoseconds - offset to 1601
         my ( $host, $port, $timeout ) = @_;
         return Net::LDAP->new( $host, port => $port || 389, timeout => $timeout || 60 ) || sub {
             cluck(qq/Failed to connect to '$host'. Reason: '$@'/);
-            return undef;
+            return;
         };
     }
 
@@ -119,10 +119,14 @@ Basicaly the subroutine for authentication in the ActiveDirectory
 
 sub authenticate {
     my ( $self, $username, $password ) = @_;
-    return undef unless $self->ldap;
+    return unless $self->ldap;
     my $user = sprintf( '%s@%s', $username, $self->domain );
     my $message = $self->ldap->bind( $user, password => $password );
-    return _parse_error_message($message) if ( _v_is_error( $message, $user ) );
+    if ( _v_is_error( $message, $user ) ) {
+        $self->error_message( _parse_error_message($message) );
+        return;
+    }
+
     my $result = $self->_search_users( qq/(&(objectClass=person)(userPrincipalName=$user./ . $self->principal . '))' );
     foreach ( $result->entries ) {
         require Auth::ActiveDirectory::Group;
@@ -143,7 +147,7 @@ sub authenticate {
 
         );
     }
-    return undef;
+    return;
 }
 
 =head2 list_users
@@ -152,9 +156,12 @@ sub authenticate {
 
 sub list_users {
     my ( $self, $user, $password, $search_string ) = @_;
-    my $connection = $self->ldap || return undef;
+    my $connection = $self->ldap || return;
     my $message = $connection->bind( $user, password => $password );
-    return undef if ( _v_is_error( $message, $user ) );
+    if ( _v_is_error( $message, $user ) ) {
+        $self->error_message( _parse_error_message($message) );
+        return;
+    }
     my $result = $self->_search_users(qq/(&(objectClass=person)(name=$search_string*))/);
     return [ map { Auth::ActiveDirectory::User->new( name => $_->get_value(q/name/), uid => $_->get_value(q/sAMAccountName/) ) } $result->entries ];
 }
@@ -241,6 +248,18 @@ sub base {
     return $_[0]->{base} unless $_[1];
     $_[0]->{base} = $_[1];
     return $_[0]->{base};
+}
+
+=head2 error_message
+
+Get error message if something is going wrong.
+
+=cut
+
+sub error_message {
+    return $_[0]->{_error_message} unless $_[1];
+    $_[0]->{_error_message} = $_[1];
+    return $_[0]->{_error_message};
 }
 
 1;    # Auth::ActiveDirectory
