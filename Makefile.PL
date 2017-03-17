@@ -14,7 +14,6 @@ WriteMakefile(
         'ExtUtils::MakeMaker' => 0,
     },
     PREREQ_PM => {
-        'Carp'      => 0,
         'Net::LDAP' => 0,
     },
     TEST_REQUIRES => {

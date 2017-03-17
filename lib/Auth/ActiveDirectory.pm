@@ -14,7 +14,6 @@ our $VERSION = '0.02';
 
 use strict;
 use warnings FATAL => 'all';
-use Carp qw/cluck/;
 use Net::LDAP qw[];
 use Net::LDAP::Constant qw[LDAP_INVALID_CREDENTIALS];
 my $ErrorCodes = {
@@ -57,7 +56,7 @@ ad_timestamp / nanoseconds - offset to 1601
     sub _create_connection {
         my ( $host, $port, $timeout ) = @_;
         return Net::LDAP->new( $host, port => $port || 389, timeout => $timeout || 60 ) || sub {
-            cluck(qq/Failed to connect to '$host'. Reason: '$@'/);
+            die qq/Failed to connect to '$host'. Reason: '$@'/;
             return;
         };
     }
@@ -71,7 +70,7 @@ ad_timestamp / nanoseconds - offset to 1601
         return 0 if ( !$message->is_error );
         my $error = $message->error;
         my $level = $message->code == LDAP_INVALID_CREDENTIALS ? 'debug' : 'error';
-        cluck(qq/Failed to authenticate user '$s_user'. Reason: '$error'/);
+        die qq/Failed to authenticate user '$s_user'. Reason: '$error'/;
         return 1;
     }
 
