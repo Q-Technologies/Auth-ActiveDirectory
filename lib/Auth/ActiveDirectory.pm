@@ -132,18 +132,18 @@ sub authenticate {
         require Auth::ActiveDirectory::Group;
         require Auth::ActiveDirectory::User;
         return Auth::ActiveDirectory::User->new(
-            uid               => scalar($username),
-            user              => scalar($user),
-            firstname         => scalar( $_->get_value(q/givenName/) ),
-            surname           => scalar( $_->get_value(q/sn/) ),
-            display_name      => scalar( $_->get_value(q/displayName/) ),
-            mail              => scalar( $_->get_value(q/mail/) ),
+            uid               => $username,
+            user              => $user,
+            firstname         => scalar $_->get_value(q/givenName/),
+            surname           => scalar $_->get_value(q/sn/),
+            display_name      => scalar $_->get_value(q/displayName/),
+            mail              => scalar $_->get_value(q/mail/),
             last_password_set => _ad2unixtimestamp( $_->get_value('pwdLastSet') ),
 
             # A value of 0 or 0x7FFFFFFFFFFFFFFF (9223372036854775807) indicates that the account never expires.
             # https://msdn.microsoft.com/en-us/library/ms675098(v=vs.85).aspx
-            account_expires => ( scalar( $_->get_value('accountExpires') ) != 9223372036854775807 )
-                ? _ad2unixtimestamp( scalar( $_->get_value('accountExpires') ) )
+            account_expires => ( scalar $_->get_value('accountExpires') != 9223372036854775807 )
+                ? _ad2unixtimestamp( scalar $_->get_value('accountExpires') )
                 : undef,
             groups => [
                 map { m/^CN=(.*),OU=.*$/ ? Auth::ActiveDirectory::Group->new( name => $1 ) : () }
@@ -171,9 +171,9 @@ sub list_users {
     return [
         map {
             Auth::ActiveDirectory::User->new(
-                name => scalar( $_->get_value(q/name/) ),
-                uid  => scalar( $_->get_value(q/sAMAccountName/) )
-                )
+                name => scalar $_->get_value(q/name/),
+                uid  => scalar $_->get_value(q/sAMAccountName/)
+            )
         } $result->entries
     ];
 }
