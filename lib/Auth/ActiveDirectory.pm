@@ -54,11 +54,13 @@ ad_timestamp / nanoseconds - offset to 1601
 =cut
 
     sub _create_connection {
-        my ( $host, $port, $timeout ) = @_;
-        return Net::LDAP->new( $host, port => $port || 389, timeout => $timeout || 60 ) || sub {
+        my ( $host, $port, $timeout, $start_tls ) = @_;
+        my $ldap =  Net::LDAP->new( $host, port => $port || 389, timeout => $timeout || 60 ) || sub {
             die qq/Failed to connect to '$host'. Reason: '$@'/;
             return;
         };
+	my $mesg = $ldap->start_tls( $start_tls );
+        return $ldap;
     }
 
 =head2 _v_is_error
@@ -106,7 +108,7 @@ sub new {
     my $self  = {@_};
     bless $self, $class;
     $self->{base} = qq/dc=$self->{domain},dc=$self->{principal}/ unless $self->{base};
-    $self->{ldap} = _create_connection( $self->{host}, $self->{port}, $self->{timeout} ) unless $self->{ldap};
+    $self->{ldap} = _create_connection( $self->{host}, $self->{port}, $self->{timeout}, $self->{start_tls} ) unless $self->{ldap};
     return $self;
 }
 
@@ -200,6 +202,19 @@ sub port {
     return $_[0]->{port} unless $_[1];
     $_[0]->{port} = $_[1];
     return $_[0]->{port};
+}
+
+=head2 start_tls
+
+Getter/Setter for internal hash key start_tls.
+Set to a hash as described on the Net::LDAP document.
+
+=cut
+
+sub start_tls {
+    return $_[0]->{start_tls} unless $_[1];
+    $_[0]->{start_tls} = $_[1];
+    return $_[0]->{start_tls};
 }
 
 =head2 timeout
